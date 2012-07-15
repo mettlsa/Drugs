@@ -1,4 +1,8 @@
-(ns myproject.core)
+(ns bagsolution)
+
+(use '[clojure.string :only (split)])
+(use '[clojure.java.io :only [reader]])
+ 
 
 (def item-data
   [ "luke"        9   150
@@ -114,12 +118,12 @@
   
   )
 
-;Reads an input file of test data "data.txt".  
+;Reads an input file of test data.  Please give the full file location ex:  "C://Drugs/myprojectdata.txt"
 ;Test data must be in the format 'name weight value' with only one space between and no punctuation. 
 ;Takes the max weight that you are solving for.
 ;Returns the total value and items selected. 
 (defn test-other-data
-  [max-weight]
+  [max-weight full-file-name]
   (use '[clojure.string :only (split)])
   (use '[clojure.java.io :only (reader)])
   (let [
@@ -128,7 +132,7 @@
                 (hash-map :name name 
                           :weight (Integer/parseInt weight) 
                           :value (Integer/parseInt cost))) 
-              (map #(split % #" ") (line-seq (reader "C://Drugs/myproject/src/myproject/data.txt")))))
+                          (map #(split % #" ") (line-seq (reader full-file-name)))))
     
         ;call function to compute answer and answer vector
         [total-value selected-items] (fill-solution items-from-file (- (count items-from-file) 1) max-weight)
