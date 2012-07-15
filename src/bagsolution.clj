@@ -1,4 +1,4 @@
-(ns bagsolution)
+(ns myproject.core)
 
 (def item-data
   [ "luke"        9   150
@@ -60,7 +60,10 @@
 
 (def fill-solution-cached (memoize fill-solution))
 
-(defn find-best-answer 
+;main function that finds the answer to the origional question.
+;Takes a max weight you would like to solve for.
+;Prints out the selected dolls (items selected) and the street value (max profit).
+(defn find-origional-answer 
   [max-weight]
  (let [[total-value selected-items] (fill-solution items (- (count items) 1) max-weight)
         ; get the names from the dolls-available based on selected-dolls
@@ -71,8 +74,16 @@
     ) )
   
 
-(defn t-case
+  
+  
+
+
+;Standard unit test with a small set of data and the expected results hardcoded.  Testing for the max weight of 15.
+;Prints out a success message as well as the expected results.
+(defn unit-test
   []
+  (use '[clojure.string :only (split)])
+  (use '[clojure.java.io :only [reader]])
   (let [new-names-set [
            "sarah" 1 1
            "jason" 4 5
@@ -85,7 +96,7 @@
         start-max-weight 15
         names-result ["lis" "judy" "jason" "sarah"]
         good-result 23
-        
+                     
         ;call function to compute answer and answer vector
         [total-value selected-items] (fill-solution new-test-items (- (count new-test-items) 1) start-max-weight)
         ; get names based on answer-vector
@@ -97,6 +108,37 @@
     
     (assert (= total-value good-result))
     (assert (= (into #{} names-result) (into #{} names)))
+    (println "All tests succeeded. \nTotal value is: " total-value)
+    (println "Selected items are:" (reverse names))
+     )
+  
+  )
+
+;Reads an input file of test data "data.txt".  
+;Test data must be in the format 'name weight value' with only one space between and no punctuation. 
+;Takes the max weight that you are solving for.
+;Returns the total value and items selected. 
+(defn test-other-data
+  [max-weight]
+  (use '[clojure.string :only (split)])
+  (use '[clojure.java.io :only (reader)])
+  (let [
+        ;setting up file reader
+        items-from-file (vec (map (fn [[name weight cost]] 
+                (hash-map :name name 
+                          :weight (Integer/parseInt weight) 
+                          :value (Integer/parseInt cost))) 
+              (map #(split % #" ") (line-seq (reader "C://Drugs/myproject/src/myproject/data.txt")))))
+    
+        ;call function to compute answer and answer vector
+        [total-value selected-items] (fill-solution items-from-file (- (count items-from-file) 1) max-weight)
+        ; get names based on answer-vector
+        names (map (comp :name items-from-file) selected-items)]
+    
+    (assert (number? total-value))
+    (assert (vector? selected-items))
+    (assert (seq? names))
+    
     (println "Total value is: " total-value)
     (println "Selected items are:" (reverse names))
      )
